@@ -1,0 +1,37 @@
+Upute za korištenje alata za pohranu lozinki koji koristi simetričnu kriptografiju. Alat
+je ostvaren da radi iz naredbenog retka, a podatak sprema na disk. Zasnivase na AES ključu
+dedriviranom iz glavne zaporke i salt-a.
+
+NAPOMENA: Sve se datoteke nalaze u radnome direktoriju!
+
+I. korak, Inicijalizacija glavne zaporke.
+-> python3 passws.py --init <glavna_zaporka>
+
+Opis koraka: ovaj će korak zadanu glavnu zaporku sa unaprijed definiranim salt-om (dakle, poznate
+duljine i sadržaja) napraviti SHA hash, koji sprema u datoteku shakey.bin u radnome direktoriju.
+Tako dobiveni se ključ koristi za enkripciju/dekripciju para adresa-zaporka s njemu zadanim
+inicijalizacijskim vektorom.
+
+II. korak, Spremanje zaporki za zadanu web lokaciju.
+-> python3 passwords.py --save <glavna_zaporka> <web_lokacija> <sifra>
+
+Opis koraka: ovaj korak zapisuje zaporku za odredenu web lokaciju (pažnja, glavna zaporka mora biti
+jednaka onoj prethodno definiranoj). Sama se enkripcija provodi AES-128 zaštitom u EAX modu.
+Ovakvav se par adresa-zaporka pohranjuje na kraju u binarnu datoteku passwords.bin uz prethodno
+definiran inicijalizacijski vektor, kao i oznaku integriteta.
+
+III. korak, Dohvat zaprke za zadanu web lokaciju.
+-> python3 passwords.py --get <glavna_zaporka> <web_lokacija>
+
+Opis koraka: ovaj korak vraća zaporku za zadanu adresu (također, glavna zaporka mora biti jednaka
+početno definiranoj, inače alat daje upozorenje). Provodi se dekripcija adrese te same lokacije,
+uz prethodnu provjeru inicijalizacijskim vektorom, iz binarne datoteke passwords.bin te se
+prikazuju korisniku.
+
+Više informacjia o formatu upisa arhgumenata može se vidjeti sljedećom naredbom u naredbenom retku:
+-> python3 passwords.py -h
+
+Također postoji skripta za pokretanje nazvana pokreni.sh. Prije pokretanja skripte potrebno je 
+u naredbenom retku napisati naredbu:
+-> chmod +x pokreni.sh
+-> ./pokreni.sh

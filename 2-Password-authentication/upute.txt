@@ -1,0 +1,33 @@
+==================== OPIS ZADATKA I UPUTE ZA KORIŠTENJE APLIKACIJE ====================
+
+Osigurana je sigurna pohrana zaporki izbjegavanjem spremanja u obliku čistog teksta, već se sprema
+kriptografski sažetak te zaporke.
+
+Alati su implementirani da ne prikazuju lozinke prilikom njihova unosa iz naredbenog retka kako
+bi pružili dodatnu razinu sigurnosti, tj. nudi zaštitu od tzv. "shoulder surfinga". Napadač tako 
+nije u mogućnosti pročitati unesenu lozinku ako se nalazi u neposrednoj blizini korisnika.
+
+Administratorski alat je implementiran da zadovoljava dodavanje novog korisničkog imena,
+promjenu lozinke postojećeg korisnika, forsiranje promjene lozinke postojećeg korisnika kao i 
+brisanje korisnika iz baze.
+
+Drugi je alat korisnički te služi za demonstraciju prijave korisnika, zadovoljava upis
+korisničkog imena i lozinke te promjenu lozinke ako je tako prethodno postavio administrator.
+
+Struktura spremljenih podataka nalazit će se u datoteci baza.json koja se inicijalizira 
+pokretanjem administratorovog alata. Početna je vrijednost prazna lista. U toj se datoteci
+spremaju korisničko ime, lozinka (pod poljima "novi kript kljuc" i "nova ozn"), zastavica promjene
+lozinke te incijalizacijski vektori. Da bi podatci bili prikazani u formatu valjanom za ispis
+u .txt odnosno .json datoteku provodi se dekodiranje bajtova (u Base64 zapisu) u ascii znakove.
+
+Enkripcija podataka se zasniva na kriptografskom AES128 ključu u EAX modu deriviranom iz zaporke
+korisnika i salta. Provjera autentičnosti korisničkog imena provodi se SHA256 funkcijom 
+sažetka.
+
+Za demonstraciju ključnih funkcionalnosti obaju alata priložena je skripta koja će alate
+prevesti i demostrirati njihov rad.
+
+Za pokretanje skripte potrebno je u terminalu omogućiti izvođenje interaktivne shell skripte.
+To se izvodi dvjema uzastopnim naredbama:
+$ chmod +x pokreni.sh
+$ ./pokreni.sh
