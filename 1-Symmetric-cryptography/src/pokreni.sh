@@ -5,14 +5,17 @@ python password_manager.py --help
 printf "\nInicijalizacija alata masterPassword glavnom lozinkom\n"
 python password_manager.py --init masterPassword
 
-printf "\nSpremanje lozinke asdfghjkl za adresu www.google.com\n\n"
-python password_manager.py --put masterPassword www.google.com asdfghjkl
+printf "\nSpremanje lozinke neprobojnaSifra za adresu fer.unizg.hr\n\n"
+python password_manager.py --put masterPassword fer.unizg.hr neprobojnaSifra
 
-printf "\nDohvat lozinke za adresu www.google.com\n\n"
-python password_manager.py --get masterPassword www.google.com
+printf "\nDohvat lozinke za adresu fer.unizg.hr\n\n"
+python password_manager.py --get masterPassword fer.unizg.hr
 
-printf "\nSpremanje lozinke qwertzuio za adresu www.firefox.com\n\n"
-python password_manager.py --put masterPassword www.firefox.com qwertzuio
+printf "\nSpremanje lozinke jakoteskaSifra za adresu chatgpt.com\n\n"
+python password_manager.py --put masterPassword chatgpt.com jakoteskaSifra
 
-printf "\nDohvat lozinke za adresu www.firefox.com\n\n"
-python password_manager.py --get masterPassword www.firefox.com
+printf "\nDohvat lozinke za adresu chatgpt.com\n\n"
+python password_manager.py --get masterPassword chatgpt.com
+
+printf "\nDohvat lozinke za adresu chatgpt.com pogresnom glavnom lozinkom\n\n"
+python password_manager.py --get masterPasssssword chatgpt.com
