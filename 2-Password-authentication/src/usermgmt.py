@@ -1,72 +1,74 @@
 import json
 from getpass import getpass
-from sys import argv
+from sys import argv, exit
 
-from korisnik import Korisnik
+from user import User
 
+def add_user(username):
+    password = getpass("Enter Password: ")
+    repeat_password = getpass("Repeat Password: ")
 
-def dodavanje_korisnika(korisnicko_ime):
-    lozinka = getpass()
-    ponovljena_lozinka = getpass("Repeat Password: ")
+    if password != repeat_password:
+        exit("User add failed. Passwords do not match.")
 
-    if lozinka != ponovljena_lozinka:
-        exit("User add failed. Password mismatch.")
-
-    korisnik = Korisnik(korisnicko_ime)
-    if korisnik.spremi_lozinku(lozinka):
-        print("User add successfuly added.")
+    user = User(username)
+    if user.add_password(password):
+        print("User successfully added.")
     else:
-        print("Password add failed.")
+        # Error message is handled within User.add_password
+        pass
 
 
-def zamjena_lozinke(korisnicko_ime):
-    lozinka = getpass()
-    ponovljena = getpass("Repeat Password: ")
+def change_password(username):
+    new_password = getpass("Enter New Password: ")
+    repeat_new_password = getpass("Repeat New Password: ")
 
-    if lozinka != ponovljena:
-        exit("Password change failed. Password mismatch.")
+    if new_password != repeat_new_password:
+        exit("Password change failed. Passwords do not match.")
 
-    korisnik = Korisnik(korisnicko_ime)
-    if korisnik.zamjeni(lozinka):
+    user = User(username)
+    if user.change_password(new_password):
         print("Password change successful.")
     else:
-        print("Password change failed.")
+        # Error message is handled within User.change_password
+        pass
 
 
-def forsiraj_promjenu(korisnicko_ime):
-    with open("baza.json", "r") as f:
-        sadrzaj = json.load(f)
-
-    for element in sadrzaj:
-        if element["korisnik"] == korisnicko_ime:
-            element["promjena"] = True
-            break
-
-    korisnik = Korisnik(korisnicko_ime)
-    korisnik.spremi_u_bazu(sadrzaj)
-    print("User will be requested to change password on next login.")
-
-
-def izbrisi_korisnika(korisnicko_ime):
-    with open("baza.json", "r") as f:
-        sadrzaj = json.load(f)
-
-    novi_json = [i for i in sadrzaj if
-                 not (i["korisnik"] == korisnicko_ime)]
-
-    korisnik = Korisnik(korisnicko_ime)
-    korisnik.spremi_u_bazu(novi_json)
-    print("User successfully removed.")
-
-
-if __name__ == "__main__":  # Format ulaza: funkcija varijabla
-    if argv[1].lower() == "add":
-        dodavanje_korisnika(argv[2])
-    elif argv[1].lower() == "passwd":
-        zamjena_lozinke(argv[2])
-    elif argv[1].lower() == "forcepass":
-        forsiraj_promjenu(argv[2])
-    elif argv[1].lower() == "del":
-        izbrisi_korisnika(argv[2])
+def force_password_change(username):
+    user = User(username)
+    if user.set_force_password_change(True):
+        print(f"User '{username}' will be requested to change password on next login.")
     else:
-        print("Invalid program argument.")
+        # Error message is handled within User.set_force_password_change
+        pass
+
+
+def delete_user(username):
+    user = User(username)
+    if user.delete_user():
+        print(f"User '{username}' successfully removed.")
+    else:
+        # Error message is handled within User.delete_user
+        pass
+
+
+if __name__ == "__main__":
+    if len(argv) < 3:
+        print("Usage: python usermgmt.py <command> <username>")
+        print("Commands: add, passwd, forcepass, del")
+        exit(1)
+
+    command = argv[1].lower()
+    username = argv[2]
+
+    if command == "add":
+        add_user(username)
+    elif command == "passwd":
+        change_password(username)
+    elif command == "forcepass":
+        force_password_change(username)
+    elif command == "del":
+        delete_user(username)
+    else:
+        print("Invalid command argument.")
+        print("Commands: add, passwd, forcepass, del")
