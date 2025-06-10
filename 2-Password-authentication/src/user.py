@@ -8,25 +8,26 @@ from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 
+
 class User:
     def __init__(self, username):
         self.username = username
         self.salt = None  # Will be loaded/generated per user
-        self.password_hash = None # Will be loaded/generated per user
+        self.password_hash = None  # Will be loaded/generated per user
 
     def _derive_fernet_key(self, salt, password_raw):
         """Derives a Fernet key from the raw password and a unique salt."""
         # Using Scrypt for password hashing and key derivation
         kdf = Scrypt(
             salt=salt,
-            length=32, # Fernet key length
-            n=2**18,   # CPU/Memory cost parameter
-            r=8,       # Block size parameter
-            p=1,       # Parallelization parameter
-            backend=default_backend()
+            length=32,  # Fernet key length
+            n=2**18,  # CPU/Memory cost parameter
+            r=8,  # Block size parameter
+            p=1,  # Parallelization parameter
+            backend=default_backend(),
         )
-        derived_key = kdf.derive(password_raw.encode('utf-8'))
-        return b64encode(derived_key) # Fernet key needs to be base64 encoded
+        derived_key = kdf.derive(password_raw.encode("utf-8"))
+        return b64encode(derived_key)  # Fernet key needs to be base64 encoded
 
     def _get_user_data(self, all_users_data):
         """Helper to find user data in the loaded JSON."""
@@ -39,7 +40,7 @@ class User:
     def _save_all_users_data(all_users_data):
         """Saves the entire list of user data to the database file."""
         with open("database.json", "w") as f:
-            json.dump(all_users_data, f, indent=4, separators=(',', ': '))
+            json.dump(all_users_data, f, indent=4, separators=(",", ": "))
 
     def add_password(self, password_raw):
         """
@@ -77,8 +78,10 @@ class User:
         new_user_data = {
             "username": self.username,
             "force_password_change": False,
-            "salt": b64encode(salt).decode('utf-8'), # Store salt in base64
-            "key_proof": b64encode(encrypted_proof).decode('utf-8') # Store encrypted proof
+            "salt": b64encode(salt).decode("utf-8"),  # Store salt in base64
+            "key_proof": b64encode(encrypted_proof).decode(
+                "utf-8"
+            ),  # Store encrypted proof
         }
 
         all_users_data.append(new_user_data)
@@ -109,9 +112,11 @@ class User:
                 new_f = Fernet(new_fernet_key)
                 new_encrypted_proof = new_f.encrypt(b"key_verification_string")
 
-                user_data["salt"] = b64encode(new_salt).decode('utf-8')
-                user_data["key_proof"] = b64encode(new_encrypted_proof).decode('utf-8')
-                user_data["force_password_change"] = False # Reset this flag after change
+                user_data["salt"] = b64encode(new_salt).decode("utf-8")
+                user_data["key_proof"] = b64encode(new_encrypted_proof).decode("utf-8")
+                user_data["force_password_change"] = (
+                    False  # Reset this flag after change
+                )
             updated_users_data.append(user_data)
 
         if not user_found:
@@ -135,7 +140,7 @@ class User:
 
         user_data = self._get_user_data(all_users_data)
         if not user_data:
-            return False # User does not exist
+            return False  # User does not exist
 
         stored_salt = b64decode(user_data["salt"])
         stored_key_proof = b64decode(user_data["key_proof"])
@@ -144,11 +149,11 @@ class User:
             # Derive the key using the provided password and stored salt
             derived_fernet_key = self._derive_fernet_key(stored_salt, password_raw)
             f = Fernet(derived_fernet_key)
-            
+
             # Attempt to decrypt the stored proof.
             # If the password is correct, decryption will succeed.
             # If incorrect, it will raise an InvalidToken exception.
-            f.decrypt(stored_key_proof, ttl=None) # ttl=None means no expiry
+            f.decrypt(stored_key_proof, ttl=None)  # ttl=None means no expiry
             return True
         except Exception as e:
             # Any error during decryption means the password is incorrect or data is corrupt
@@ -196,7 +201,8 @@ class User:
 
         initial_len = len(all_users_data)
         updated_users_data = [
-            user_data for user_data in all_users_data
+            user_data
+            for user_data in all_users_data
             if not (user_data["username"] == self.username)
         ]
 
@@ -213,10 +219,10 @@ class User:
             with open("database.json", "r") as f:
                 all_users_data = json.load(f)
         except FileNotFoundError:
-            return False # Database doesn't exist, cannot check
+            return False  # Database doesn't exist, cannot check
 
         user_data = self._get_user_data(all_users_data)
 
         if user_data:
             return user_data.get("force_password_change", False)
-        return False # User not found
+        return False  # User not found

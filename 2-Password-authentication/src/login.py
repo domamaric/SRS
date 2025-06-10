@@ -2,7 +2,8 @@ import json
 from getpass import getpass
 from sys import argv, exit
 
-from user import User 
+from user import User
+
 
 def main(username):
     user = User(username)
@@ -10,7 +11,7 @@ def main(username):
 
     if not user.verify_password(entered_password):
         print("Username or password incorrect.")
-        return # Exit if login fails
+        return  # Exit if login fails
 
     print("Login successful.")
 

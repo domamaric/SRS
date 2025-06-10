@@ -4,6 +4,7 @@ from sys import argv, exit
 
 from user import User
 
+
 def add_user(username):
     password = getpass("Enter Password: ")
     repeat_password = getpass("Repeat Password: ")
