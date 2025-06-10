@@ -35,6 +35,7 @@ class User:
                 return user_data
         return None
 
+    @staticmethod
     def _save_all_users_data(all_users_data):
         """Saves the entire list of user data to the database file."""
         with open("database.json", "w") as f:
